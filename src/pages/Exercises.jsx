@@ -12,7 +12,6 @@ function Exercises() {
   const fetchExercises = async () => {
     try {
       const res = await api.get("/exercises");
-      console.log("result is: ",res)
       setExercises(res.data);
     } catch (err) {
       console.error(err);
@@ -36,7 +35,6 @@ function Exercises() {
 
         {exercises?.map((ex) => {
           const isActive = activeId === ex.id;
-            console.log(ex)
           return (
             <div
               key={ex.id}
@@ -69,39 +67,38 @@ function Exercises() {
 
               {/* 🔥 EXPANDABLE CONTENT */}
               <div
-                className={`transition-all duration-300 ${
-                  isActive ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-                } overflow-hidden`}
+                className={`grid transition-all duration-300 ${
+                  isActive ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                }`}
               >
+                <div className="overflow-hidden">
+                  {/* 🎥 VIDEO */}
+                  <video
+                    src={ex.videoUrl}
+                    className="w-full h-52 sm:h-64 object-contain bg-black"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
 
-                {/* 🎥 VIDEO */}
-                <video
-                  src={ex.videoUrl}
-                  className="w-full h-64 object-contain bg-black"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                />
+                  {/* 📄 DETAILS */}
+                  <div className="p-4">
+                    <p className="text-sm text-textSecondary mb-2">
+                      {ex.muscleGroup.toUpperCase()}
+                    </p>
 
-                {/* 📄 DETAILS */}
-                <div className="p-4">
+                    <p className="text-sm mb-3 whitespace-pre-wrap break-words">
+                      {ex.overview}
+                    </p>
 
-                  <p className="text-sm text-textSecondary mb-2">
-                    {ex.muscleGroup.toUpperCase()}
-                  </p>
-
-                  <p className="text-sm mb-3">
-                    {ex.overview}
-                  </p>
-
-                  {/* Instructions */}
-                  <ul className="text-sm text-textSecondary list-disc pl-5 space-y-1">
-                    {ex.instructions.split("|").map((step, idx) => (
-                      <li key={idx}>{step.trim()}</li>
-                    ))}
-                  </ul>
-
+                    {/* Instructions */}
+                    <ul className="text-sm text-textSecondary list-disc pl-5 space-y-1">
+                      {ex.instructions.split("|").map((step, idx) => (
+                        <li key={idx}>{step.trim()}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
 
