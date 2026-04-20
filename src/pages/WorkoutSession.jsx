@@ -1,12 +1,16 @@
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "../api/axiosClient";
+import { useNavigate } from "react-router-dom";
+
 
 function WorkoutSession() {
   const { state } = useLocation();
 
   const [session] = useState(state);
   const [activeId, setActiveId] = useState(null);
+    const navigate = useNavigate();
+
 
   // stores completed sets
   const [logs, setLogs] = useState({});
@@ -16,6 +20,7 @@ function WorkoutSession() {
 
   // rest timer per exercise
   const [restTimer, setRestTimer] = useState({});
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // 🔁 TIMER EFFECT
   useEffect(() => {
@@ -39,17 +44,15 @@ function WorkoutSession() {
   const toggleAccordion = (id) => {
     setActiveId(activeId === id ? null : id);
   };
-  const finishWorkout = async () => {
-    const confirmFinish = window.confirm("Finish workout?");
-    if (!confirmFinish) return;
-
-    try {
-      await api.post(`/sessions/${session.sessionId}/complete`);
-      alert("🎉 Workout Completed!");
-    } catch (err) {
-      alert("❌ Failed");
-    }
-  };
+const finishWorkout = async () => {
+  try {
+    await api.post(`/sessions/${session.sessionId}/complete`);
+    alert("🎉 Workout Completed!");
+    navigate("/", { replace: true });
+  } catch (err) {
+    alert("❌ Failed");
+  }
+};
 
   const logSet = async (exercise) => {
     const input = currentInput[exercise.exerciseLogId];
@@ -233,11 +236,45 @@ function WorkoutSession() {
 
       {/* FINISH BUTTON */}
       <button
-        onClick={finishWorkout}
+        onClick={() => setShowConfirm(true)}
         className="w-full bg-primary text-black py-3 rounded-xl mt-4"
       >
         Finish Workout
       </button>
+      {showConfirm && (
+  <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+
+    <div className="bg-card p-6 rounded-xl w-full max-w-sm text-center">
+
+      <p className="mb-4 text-lg">
+        Finish workout?
+      </p>
+
+      <div className="flex gap-3">
+
+        <button
+          onClick={() => setShowConfirm(false)}
+          className="flex-1 border border-gray-600 py-2 rounded"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={async () => {
+            setShowConfirm(false);
+            await finishWorkout();
+          }}
+          className="flex-1 bg-primary text-black py-2 rounded"
+        >
+          Confirm
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
 
     </div>
   );
