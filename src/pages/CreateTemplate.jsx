@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axiosClient";
-
+import { useNavigate } from "react-router-dom";
 const MUSCLE_GROUPS = ["ALL", "chest", "legs", "biceps", "triceps", "back", "shoulders"];
 
 function CreateTemplate() {
@@ -8,6 +8,7 @@ function CreateTemplate() {
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState("");
   const [muscle, setMuscle] = useState("ALL");
+  const navigate = useNavigate();
 
   const [template, setTemplate] = useState({
     name: "",
@@ -56,24 +57,25 @@ function CreateTemplate() {
   };
 
   // 🚀 CREATE TEMPLATE
-  const createTemplate = async () => {
-    try {
-      await api.post("/templates", {
-        ...template,
-        createdBy: 1,
-        exercises: selected.map(({ name, ...rest }) => rest),
-      });
+const createTemplate = async () => {
+  try {
+    await api.post("/templates", {
+      ...template,
+      createdBy: 1,
+      exercises: selected.map(({ name, ...rest }) => rest),
+    });
 
-      alert("✅ Template created successfully!");
+    // redirect after success
+    navigate("/", {
+      replace: true,
+      state: { success: "Template created 🎉" },
+    });
 
-      // reset
-      setSelected([]);
-      setTemplate({ name: "", description: "", level: "BEGINNER" });
-
-    } catch (err) {
-      alert("❌ Failed to create template");
-    }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("❌ Failed to create template");
+  }
+};
 
   return (
     <div className="min-h-screen bg-bgMain text-textMain px-4 py-6">

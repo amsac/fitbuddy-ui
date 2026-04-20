@@ -1,8 +1,21 @@
 import { useNavigate } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
+import { useEffect , useState} from "react";
 function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [toast, setToast] = useState(null);
 
+
+useEffect(() => {
+  if (location.state?.success) {
+    setToast(location.state.success);
+
+    setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  }
+}, []);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
         {/* HISTORY ICON (absolute top-right) */}
@@ -49,6 +62,11 @@ function Dashboard() {
         </button>
 
       </div>
+      {toast && (
+  <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-primary text-black px-6 py-3 rounded-xl shadow-lg z-50">
+    {toast}
+  </div>
+)}
     </div>
   );
 }
