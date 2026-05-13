@@ -52,3 +52,21 @@ Then launch the app in Expo Go, an iOS simulator, or an Android emulator.
 ## PR compatibility note
 
 This branch intentionally avoids adding placeholder binary image assets to keep web-based PR creation tools happy. Add final Expo app icons and splash assets later through the normal design asset workflow.
+
+## Install troubleshooting
+
+Do not run `npm i react-native-worklets/plugin`. That string is a Babel plugin path, not an npm package. The npm package is `react-native-worklets`, and it is already listed in `package.json` for Expo SDK 54/Reanimated 4 compatibility.
+
+If npm reports peer dependency conflicts on a fresh install, use:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install --legacy-peer-deps
+npm start -- --clear
+```
+
+Web support packages are included in `package.json`, so you can start web with:
+
+```bash
+npm run web
+```
